@@ -1,22 +1,17 @@
 <?php
-// admin/index.php (Login)
 session_start();
 require_once '../config/database.php';
-
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     header('Location: dashboard.php');
     exit;
 }
-
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
-
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
-
     if ($user && password_verify($password, $user['password_hash']) && $user['role'] === 'admin') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
@@ -47,11 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h3 class="fw-bold text-primary">Shelton Admin</h3>
                 <p class="text-muted small">Please sign in to continue</p>
             </div>
-            
             <?php if ($error): ?>
                 <div class="alert alert-danger py-2 small"><?php echo $error; ?></div>
             <?php endif; ?>
-
             <form method="POST">
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Username</label>
@@ -63,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold">Login to Dashboard</button>
             </form>
-            
             <div class="text-center mt-4">
                 <a href="../index.php" class="text-muted small text-decoration-none">← Back to Website</a>
             </div>

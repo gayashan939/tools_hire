@@ -1,37 +1,25 @@
 <?php
-// admin/manage-rentals.php
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: index.php');
     exit;
 }
-
-// Handle Status Updates
 if (isset($_GET['id']) && isset($_GET['status'])) {
     $id = $_GET['id'];
     $status = $_GET['status'];
-
     $pdo->beginTransaction();
     try {
-        // Update Rental Status
         $stmt = $pdo->prepare("UPDATE rentals SET status = ? WHERE id = ?");
         $stmt->execute([$status, $id]);
-
-        // Get Tool ID for this rental
         $stmt = $pdo->prepare("SELECT tool_id FROM rentals WHERE id = ?");
         $stmt->execute([$id]);
         $tool_id = $stmt->fetchColumn();
-
-        // Update Tool Availability
         $tool_status = 'Available';
         if ($status === 'confirmed') $tool_status = 'Rented';
-        
         $stmt = $pdo->prepare("UPDATE tools SET availability_status = ? WHERE id = ?");
         $stmt->execute([$tool_status, $tool_id]);
-
         $pdo->commit();
         header('Location: manage-rentals.php?msg=Rental status and tool availability updated.');
     } catch (Exception $e) {
@@ -40,7 +28,6 @@ if (isset($_GET['id']) && isset($_GET['status'])) {
     }
     exit;
 }
-
 $rentals = $pdo->query("SELECT r.*, t.name as tool_name, u.username 
                         FROM rentals r 
                         JOIN tools t ON r.tool_id = t.id 
@@ -57,7 +44,6 @@ $rentals = $pdo->query("SELECT r.*, t.name as tool_name, u.username
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="bg-light">
-
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2 admin-sidebar px-0">
@@ -72,17 +58,14 @@ $rentals = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                 <a href="../logout.php" class="btn btn-outline-light btn-sm w-100">Logout</a>
             </div>
         </nav>
-
         <main class="col-md-10 p-5">
             <h2 class="fw-bold mb-4">Rental Management</h2>
-
             <?php if (isset($_GET['msg'])): ?>
                 <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
                     <?php echo h($_GET['msg']); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
-
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -139,7 +122,6 @@ $rentals = $pdo->query("SELECT r.*, t.name as tool_name, u.username
         </main>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

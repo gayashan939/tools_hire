@@ -1,25 +1,17 @@
 <?php
-// admin/dashboard.php
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: index.php');
     exit;
 }
-
-// Fetch stats
 $totalTools = $pdo->query("SELECT COUNT(*) FROM tools")->fetchColumn();
 $pendingReviews = $pdo->query("SELECT COUNT(*) FROM reviews WHERE status = 'pending'")->fetchColumn();
 $approvedReviews = $pdo->query("SELECT COUNT(*) FROM reviews WHERE status = 'approved'")->fetchColumn();
 $avgRating = $pdo->query("SELECT AVG(overall_rating) FROM reviews WHERE status = 'approved'")->fetchColumn() ?: 0;
-
-// Rental Stats
 $totalRentals = $pdo->query("SELECT COUNT(*) FROM rentals")->fetchColumn();
 $activeRentals = $pdo->query("SELECT COUNT(*) FROM rentals WHERE status = 'confirmed'")->fetchColumn();
-
-// Recent Pending Reviews
 $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username 
                         FROM reviews r 
                         JOIN tools t ON r.tool_id = t.id 
@@ -27,7 +19,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                         WHERE r.status = 'pending' 
                         ORDER BY r.created_at DESC LIMIT 5")->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +29,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="bg-light">
-
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
@@ -58,7 +48,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                 <a href="../logout.php" class="btn btn-outline-light btn-sm w-100">Logout</a>
             </div>
         </nav>
-
         <!-- Main Content -->
         <main class="col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-5">
@@ -70,7 +59,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                     <i class="far fa-calendar-alt me-2"></i><?php echo date('D, M d Y'); ?>
                 </div>
             </div>
-
             <!-- Stats -->
             <div class="row mb-5">
                 <div class="col-md-3">
@@ -102,7 +90,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                     </div>
                 </div>
             </div>
-
             <!-- Recent Activity -->
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                 <div class="card-header bg-white border-0 p-4">
@@ -146,7 +133,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
         </main>
     </div>
 </div>
-
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

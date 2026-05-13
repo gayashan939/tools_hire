@@ -1,5 +1,4 @@
 <?php
-// includes/header.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,7 +12,6 @@ require_once __DIR__ . '/functions.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shelton Tool-Hire | Premium Equipment Rental</title>
     <meta name="description" content="Shelton Tool-Hire offers high-quality building, landscaping, and power tools for professionals and DIY enthusiasts.">
-    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
@@ -24,7 +22,6 @@ require_once __DIR__ . '/functions.php';
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
         <a class="navbar-brand" href="index.php">
@@ -50,14 +47,12 @@ require_once __DIR__ . '/functions.php';
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2 small"></i> Logout</a></li>
                         </ul>
-
                     </li>
                 <?php else: ?>
                     <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                     <li class="nav-item"><a class="btn btn-secondary btn-sm rounded-pill px-3 ms-lg-2 mt-2 mt-lg-0" href="register.php">Register</a></li>
                 <?php endif; ?>
             </ul>
-
         </div>
     </div>
 </nav>

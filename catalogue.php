@@ -1,12 +1,8 @@
 <?php
-// catalogue.php
 require_once 'includes/header.php';
-
 $category_id = $_GET['category'] ?? null;
 $search = $_GET['search'] ?? '';
 $sort = $_GET['sort'] ?? 'newest';
-
-// Base Query
 $query = "SELECT t.*, c.name as category_name, 
           (SELECT AVG(overall_rating) FROM reviews WHERE tool_id = t.id AND status = 'approved') as avg_rating,
           (SELECT COUNT(*) FROM reviews WHERE tool_id = t.id AND status = 'approved') as review_count
@@ -14,33 +10,25 @@ $query = "SELECT t.*, c.name as category_name,
           JOIN categories c ON t.category_id = c.id 
           WHERE 1=1";
 $params = [];
-
 if ($category_id) {
     $query .= " AND t.category_id = :cat_id";
     $params['cat_id'] = $category_id;
 }
-
 if ($search) {
     $query .= " AND (t.name LIKE :search OR t.description LIKE :search)";
     $params['search'] = "%$search%";
 }
-
-// Sorting
 switch ($sort) {
     case 'price_low': $query .= " ORDER BY t.daily_price ASC"; break;
     case 'price_high': $query .= " ORDER BY t.daily_price DESC"; break;
     case 'rating': $query .= " ORDER BY avg_rating DESC"; break;
     default: $query .= " ORDER BY t.created_at DESC";
 }
-
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $tools = $stmt->fetchAll();
-
-// Fetch categories for filter
 $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
 ?>
-
 <div class="container py-5">
     <div class="row">
         <!-- Sidebar Filters -->
@@ -59,7 +47,6 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                     </div>
                 </div>
             </div>
-
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Sort By</h5>
@@ -76,14 +63,12 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                 </div>
             </div>
         </aside>
-
         <!-- Tool Grid -->
         <main class="col-md-9">
             <div class="mb-4 d-flex justify-content-between align-items-center">
                 <h2 class="fw-bold m-0">Equipment Catalogue</h2>
                 <span class="text-muted"><?php echo count($tools); ?> tools found</span>
             </div>
-
             <?php if (empty($tools)): ?>
                 <div class="text-center py-5">
                     <i class="fas fa-search fa-4x text-light mb-3"></i>
@@ -104,7 +89,6 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                                     </span>
                                 </div>
                                 <h6 class="fw-bold mb-3"><?php echo h($tool['name']); ?></h6>
-                                
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="price-tag">
                                         $<?php echo h($tool['daily_price']); ?> <span class="fw-normal small">/ day</span>
@@ -120,5 +104,4 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
         </main>
     </div>
 </div>
-
 <?php require_once 'includes/footer.php'; ?>

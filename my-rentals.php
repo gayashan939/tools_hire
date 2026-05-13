@@ -1,15 +1,10 @@
 <?php
-// my-rentals.php
 require_once 'includes/header.php';
-
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Fetch user's rentals
 $stmt = $pdo->prepare("SELECT r.*, t.name as tool_name, t.image_path FROM rentals r 
                        JOIN tools t ON r.tool_id = t.id 
                        WHERE r.user_id = ? 
@@ -17,13 +12,11 @@ $stmt = $pdo->prepare("SELECT r.*, t.name as tool_name, t.image_path FROM rental
 $stmt->execute([$user_id]);
 $rentals = $stmt->fetchAll();
 ?>
-
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold m-0">My Rental History</h2>
         <a href="catalogue.php" class="btn btn-outline-secondary rounded-pill btn-sm">Rent More</a>
     </div>
-
     <?php if (empty($rentals)): ?>
         <div class="text-center py-5 bg-white rounded-4 shadow-sm">
             <i class="fas fa-history fa-4x text-light mb-3"></i>
@@ -67,5 +60,4 @@ $rentals = $stmt->fetchAll();
         </div>
     <?php endif; ?>
 </div>
-
 <?php require_once 'includes/footer.php'; ?>

@@ -1,15 +1,10 @@
 <?php
-// index.php
 require_once 'includes/header.php';
-
-// Fetch featured tools
 $stmt = $pdo->prepare("SELECT t.*, c.name as category_name FROM tools t 
                        JOIN categories c ON t.category_id = c.id 
                        WHERE t.featured = 1 LIMIT 3");
 $stmt->execute();
 $featuredTools = $stmt->fetchAll();
-
-// If no featured tools, just get first 3
 if (empty($featuredTools)) {
     $stmt = $pdo->prepare("SELECT t.*, c.name as category_name FROM tools t 
                            JOIN categories c ON t.category_id = c.id LIMIT 3");
@@ -17,17 +12,14 @@ if (empty($featuredTools)) {
     $featuredTools = $stmt->fetchAll();
 }
 ?>
-
 <section class="hero">
     <div class="container">
         <h1>Work Harder, Rent Smarter.</h1>
         <p class="lead opacity-75">Premium tool hire for construction, landscaping, and industrial projects.</p>
-        
         <form action="catalogue.php" method="GET" class="search-container">
             <input type="text" name="search" placeholder="What are you looking for? (e.g. Drill, Ladder...)">
             <button type="submit">Search</button>
         </form>
-
         <div class="d-flex justify-content-center gap-3 mt-4">
             <span class="badge bg-secondary py-2 px-3">Over 500+ Tools</span>
             <span class="badge bg-secondary py-2 px-3">Expert Support</span>
@@ -35,7 +27,6 @@ if (empty($featuredTools)) {
         </div>
     </div>
 </section>
-
 <main class="container py-5">
     <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
@@ -44,7 +35,6 @@ if (empty($featuredTools)) {
         </div>
         <a href="catalogue.php" class="btn btn-outline-primary rounded-pill">View All Catalogue</a>
     </div>
-
     <div class="row">
         <?php foreach ($featuredTools as $tool): ?>
         <div class="col-md-4">
@@ -60,7 +50,6 @@ if (empty($featuredTools)) {
                     <span class="badge bg-light text-primary mb-2"><?php echo h($tool['category_name']); ?></span>
                     <h5 class="fw-bold"><?php echo h($tool['name']); ?></h5>
                     <p class="text-muted small mb-3"><?php echo h(substr($tool['description'], 0, 80)); ?>...</p>
-                    
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="price-tag">
                             $<?php echo h($tool['daily_price']); ?> <span class="fw-normal">/ day</span>
@@ -72,7 +61,6 @@ if (empty($featuredTools)) {
         </div>
         <?php endforeach; ?>
     </div>
-
     <section class="mt-5 p-5 bg-white rounded-4 shadow-sm">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -92,5 +80,4 @@ if (empty($featuredTools)) {
         </div>
     </section>
 </main>
-
 <?php require_once 'includes/footer.php'; ?>

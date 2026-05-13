@@ -1,23 +1,17 @@
 <?php
-// admin/manage-tools.php
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: index.php');
     exit;
 }
-
-// Handle Tool Deletion
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM tools WHERE id = ?");
     $stmt->execute([$_GET['delete']]);
     header('Location: manage-tools.php?msg=Tool deleted.');
     exit;
 }
-
-// Handle Form Submission (Add/Edit)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'] ?? null;
     $name = $_POST['name'];
@@ -28,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $w_price = $_POST['weekly_price'];
     $status = $_POST['availability_status'];
     $featured = isset($_POST['featured']) ? 1 : 0;
-
     if ($id) {
         $stmt = $pdo->prepare("UPDATE tools SET name=?, category_id=?, description=?, hourly_price=?, daily_price=?, weekly_price=?, availability_status=?, featured=? WHERE id=?");
         $stmt->execute([$name, $category_id, $description, $h_price, $d_price, $w_price, $status, $featured, $id]);
@@ -41,11 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: manage-tools.php?msg=$msg");
     exit;
 }
-
 $tools = $pdo->query("SELECT t.*, c.name as category_name FROM tools t JOIN categories c ON t.category_id = c.id ORDER BY t.created_at DESC")->fetchAll();
 $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
-
-// If editing
 $editTool = null;
 if (isset($_GET['edit'])) {
     $stmt = $pdo->prepare("SELECT * FROM tools WHERE id = ?");
@@ -63,7 +53,6 @@ if (isset($_GET['edit'])) {
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="bg-light">
-
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2 admin-sidebar px-0">
@@ -77,7 +66,6 @@ if (isset($_GET['edit'])) {
                 <a href="../logout.php" class="btn btn-outline-light btn-sm w-100">Logout</a>
             </div>
         </nav>
-
         <main class="col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold m-0"><?php echo $editTool ? 'Edit Equipment' : 'Equipment Inventory'; ?></h2>
@@ -89,7 +77,6 @@ if (isset($_GET['edit'])) {
                     <a href="manage-tools.php" class="btn btn-light rounded-pill">Cancel Edit</a>
                 <?php endif; ?>
             </div>
-
             <!-- Form (Add/Edit) -->
             <div class="collapse <?php echo $editTool ? 'show' : ''; ?> mb-5" id="toolForm">
                 <div class="card border-0 shadow-sm rounded-4">
@@ -151,7 +138,6 @@ if (isset($_GET['edit'])) {
                     </form>
                 </div>
             </div>
-
             <!-- Table -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="table-responsive">
@@ -204,7 +190,6 @@ if (isset($_GET['edit'])) {
         </main>
     </div>
 </div>
-
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

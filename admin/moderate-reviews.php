@@ -1,31 +1,22 @@
 <?php
-// admin/moderate-reviews.php
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: index.php');
     exit;
 }
-
-// Handle actions
 if (isset($_GET['id']) && isset($_GET['action'])) {
     $id = $_GET['id'];
     $action = $_GET['action'];
     $status = ($action === 'approve') ? 'approved' : 'rejected';
-    
     $stmt = $pdo->prepare("UPDATE reviews SET status = ? WHERE id = ?");
     $stmt->execute([$status, $id]);
-    
-    // Log the action
     $stmt = $pdo->prepare("INSERT INTO moderator_actions (admin_id, action_type, target_type, target_id) VALUES (?, ?, 'review', ?)");
     $stmt->execute([$_SESSION['user_id'], $action, $id]);
-    
     header('Location: moderate-reviews.php?msg=Action completed.');
     exit;
 }
-
 $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username 
                         FROM reviews r 
                         JOIN tools t ON r.tool_id = t.id 
@@ -42,7 +33,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="bg-light">
-
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2 admin-sidebar px-0">
@@ -56,17 +46,14 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
                 <a href="../logout.php" class="btn btn-outline-light btn-sm w-100">Logout</a>
             </div>
         </nav>
-
         <main class="col-md-10 p-5">
             <h2 class="fw-bold mb-4">Review Moderation</h2>
-
             <?php if (isset($_GET['msg'])): ?>
                 <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
                     <?php echo h($_GET['msg']); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
-
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -115,7 +102,6 @@ $reviews = $pdo->query("SELECT r.*, t.name as tool_name, u.username
         </main>
     </div>
 </div>
-
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

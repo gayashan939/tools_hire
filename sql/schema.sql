@@ -1,15 +1,11 @@
--- Database Creation
+
 CREATE DATABASE IF NOT EXISTS shelton_hire;
 USE shelton_hire;
-
--- Table: categories
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT
 ) ENGINE=InnoDB;
-
--- Table: tools
 CREATE TABLE IF NOT EXISTS tools (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT,
@@ -24,8 +20,6 @@ CREATE TABLE IF NOT EXISTS tools (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
-
--- Table: users
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -34,8 +28,6 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('admin', 'customer') DEFAULT 'customer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
-
--- Table: reviews
 CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tool_id INT,
@@ -47,8 +39,6 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (tool_id) REFERENCES tools(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
--- Table: review_ratings (Detailed criteria)
 CREATE TABLE IF NOT EXISTS review_ratings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT,
@@ -56,8 +46,6 @@ CREATE TABLE IF NOT EXISTS review_ratings (
     rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
--- Table: review_comments (Nested comments/Admin responses)
 CREATE TABLE IF NOT EXISTS review_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT,
@@ -70,8 +58,6 @@ CREATE TABLE IF NOT EXISTS review_comments (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (parent_comment_id) REFERENCES review_comments(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
--- Table: moderator_actions (Log)
 CREATE TABLE IF NOT EXISTS moderator_actions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     admin_id INT,
@@ -81,7 +67,6 @@ CREATE TABLE IF NOT EXISTS moderator_actions (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
-
 CREATE TABLE IF NOT EXISTS rentals (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tool_id INT,
@@ -94,24 +79,16 @@ CREATE TABLE IF NOT EXISTS rentals (
     FOREIGN KEY (tool_id) REFERENCES tools(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
--- Sample Data
 INSERT INTO categories (name, description) VALUES
 ('Power Tools', 'High-performance electric and cordless tools for all trades.'),
 ('Access Equipment', 'Ladders, scaffolding, and powered access platforms.'),
 ('Cleaning Equipment', 'Industrial vacuums, floor polishers, and pressure washers.'),
 ('Landscaping & Gardening', 'Mowers, shredders, and heavy-duty garden machinery.');
-
 INSERT INTO tools (category_id, name, description, hourly_price, daily_price, weekly_price, image_path) VALUES
 (1, 'DeWalt Cordless Drill', 'High-torque drill with two 5Ah batteries.', 5.00, 25.00, 75.00, 'drill.jpg'),
 (2, 'Aluminium Extension Ladder', '3.5m reach, lightweight and sturdy.', 4.00, 20.00, 60.00, 'ladder.jpg'),
 (4, 'Petrol Lawn Mower', 'Self-propelled with large collection bag.', 10.00, 50.00, 150.00, 'mower.jpg');
-
--- Admin User (password: admin123)
 INSERT INTO users (username, email, password_hash, role) VALUES
 ('admin', 'admin@shelton-hire.com', '$2y$10$oVYEsRBgaq0jJkDPJ6m7MuhC7l.aNBKg4svMLH/SFi51HrsSGIdQ6', 'admin');
-
--- Sample Customer (password: customer123)
 INSERT INTO users (username, email, password_hash, role) VALUES
 ('customer', 'customer@example.com', '$2y$10$oVYEsRBgaq0jJkDPJ6m7MuhC7l.aNBKg4svMLH/SFi51HrsSGIdQ6', 'customer');
-

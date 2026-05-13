@@ -1,8 +1,6 @@
 # Shelton Tool-Hire: System Design & Documentation
-
 ## 1. Project Overview
 Shelton Tool-Hire is a prototype web application designed for a tool-rental company. It features a public-facing equipment catalogue with advanced search/filtering, a dynamic rental cost calculator, and a multi-criteria review system. The backend provides administrators with tools to manage inventory, pricing, and moderate customer content, ensuring a secure and professional user experience.
-
 ## 2. Functional Requirements
 - **FR1: Public Catalogue**: Users can browse tools by category and search by name.
 - **FR2: Rental Calculator**: System calculates costs based on hourly, daily, and weekly rates for user-selected dates.
@@ -10,20 +8,17 @@ Shelton Tool-Hire is a prototype web application designed for a tool-rental comp
 - **FR4: Content Moderation**: Admin must approve reviews and comments before they appear publicly.
 - **FR5: Admin Dashboard**: CRUD operations for tools, categories, and user management.
 - **FR6: Analytics**: Admin can view metrics such as top-rated equipment and pending reviews.
-
 ## 3. Non-Functional Requirements
 - **NFR1: Security**: Protection against SQLi, XSS, and CSRF; secure password hashing (BCRYPT).
 - **NFR2: Performance**: Page load times < 2 seconds for the catalogue.
 - **NFR3: Responsiveness**: Mobile-first design using CSS Flexbox/Grid or Bootstrap.
 - **NFR4: Usability**: Intuitive navigation and clear error messaging for the calculator.
-
 ## 4. User Roles and Permissions
 | Role | Permissions |
 | --- | --- |
 | **Guest** | Browse catalogue, search tools, view approved reviews, use rental calculator. |
 | **Customer** | All Guest features + submit reviews and comments (requires login). |
 | **Admin** | Manage tools/categories, moderate reviews/comments, view statistics, manage users. |
-
 ## 5. Database Schema (ERD Explanation)
 The database follows a relational structure:
 - **`categories`** (1:M) **`tools`**: One category contains many tools.
@@ -32,18 +27,15 @@ The database follows a relational structure:
 - **`reviews`** (1:M) **`review_ratings`**: Each review stores ratings for 7 specific criteria.
 - **`reviews`** (1:M) **`review_comments`**: Reviews can have nested comments (replies).
 - **`users`** (1:M) **`reviews`**: Users author reviews.
-
 ## 6. SQL Table Creation Scripts
 ```sql
 CREATE DATABASE shelton_hire;
 USE shelton_hire;
-
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT
 );
-
 CREATE TABLE tools (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT,
@@ -58,7 +50,6 @@ CREATE TABLE tools (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
-
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -67,7 +58,6 @@ CREATE TABLE users (
     role ENUM('admin', 'customer') DEFAULT 'customer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tool_id INT,
@@ -79,7 +69,6 @@ CREATE TABLE reviews (
     FOREIGN KEY (tool_id) REFERENCES tools(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
 CREATE TABLE review_ratings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT,
@@ -87,7 +76,6 @@ CREATE TABLE review_ratings (
     rating INT CHECK (rating BETWEEN 1 AND 5),
     FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
 );
-
 CREATE TABLE review_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT,
@@ -101,7 +89,6 @@ CREATE TABLE review_comments (
     FOREIGN KEY (parent_comment_id) REFERENCES review_comments(id)
 );
 ```
-
 ## 7. Folder Structure
 ```text
 /
@@ -118,18 +105,15 @@ CREATE TABLE review_comments (
 ├── tool-detail.php     # Specific tool info + calculator
 └── index.php           # Landing page
 ```
-
 ## 8. Frontend Page Descriptions
 - **Homepage**: Hero section with search bar, "Featured" tool cards, and category quick-links.
 - **Catalogue**: Sidebar filters (category, price range, rating) and a grid of tool listings.
 - **Tool Detail**: Tabbed interface for "Description", "Hire Rates", and "Customer Reviews".
 - **Rental Calculator**: Sticky sidebar element that updates total cost in real-time.
-
 ## 9. Backend/Admin Module Descriptions
 - **Tool Manager**: Form for adding/editing tools with multi-image upload support.
 - **Moderation Panel**: List of pending reviews/comments with "Approve" and "Reject" buttons.
 - **User Management**: View and manage customer accounts and admin roles.
-
 ## 10. PHP Feature Implementation Examples
 *Using PDO for secure queries:*
 ```php
@@ -137,7 +121,6 @@ $stmt = $pdo->prepare("SELECT * FROM tools WHERE category_id = :cat_id AND avail
 $stmt->execute(['cat_id' => $categoryId]);
 $tools = $stmt->fetchAll();
 ```
-
 ## 11. Rental Calculator Logic
 The logic determines the best price by combining weekly, daily, and hourly rates:
 1. Calculate total hours between start and end.
@@ -146,24 +129,20 @@ The logic determines the best price by combining weekly, daily, and hourly rates
 4. `days = floor(remaining_hours / 24)`
 5. `hours = remaining_hours % 24`
 6. `total_cost = (weeks * weekly_rate) + (days * daily_rate) + (hours * hourly_rate)`
-
 ## 12. Review Moderation Workflow
 1. Customer submits review -> `status` set to `pending`.
 2. Admin notified via dashboard alert.
 3. Admin reviews content for profanity/relevance.
 4. Admin clicks "Approve" -> `status` updated to `approved`.
-
 ## 13. Security Measures
 - **SQLi**: All queries use PDO prepared statements.
 - **XSS**: `htmlspecialchars()` used on all user-generated content.
 - **Passwords**: `password_hash()` with `PASSWORD_DEFAULT`.
 - **Sessions**: Secure session handling with ID regeneration.
-
 ## 14. Testing Documentation
 - **Unit Tests**: Calculator logic (edge cases: same start/end time, month-end dates).
 - **Functional Tests**: Review submission flow, image upload validation.
 - **Security Tests**: Attempting XSS injection in review comments.
-
 ## 15. Suggested Future Improvements
 - **Online Booking**: Integration with a payment gateway.
 - **Live Inventory**: Real-time tracking of tool availability.

@@ -1,25 +1,19 @@
 <?php
-// rental-success.php
 require_once 'includes/header.php';
-
 $rental_id = $_GET['id'] ?? null;
 if (!$rental_id) {
     header('Location: index.php');
     exit;
 }
-
-// Fetch rental details
 $stmt = $pdo->prepare("SELECT r.*, t.name as tool_name FROM rentals r 
                        JOIN tools t ON r.tool_id = t.id 
                        WHERE r.id = ?");
 $stmt->execute([$rental_id]);
 $rental = $stmt->fetch();
-
 if (!$rental) {
     die("Rental record not found.");
 }
 ?>
-
 <div class="container py-5 text-center">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -32,7 +26,6 @@ if (!$rental) {
                     Your request to hire the <strong><?php echo h($rental['tool_name']); ?></strong> has been logged. 
                     Our team will review your request and contact you shortly for confirmation and payment details.
                 </p>
-                
                 <div class="bg-light p-3 rounded-3 mb-4 text-start">
                     <div class="d-flex justify-content-between mb-2">
                         <span class="small text-muted">Rental ID:</span>
@@ -47,7 +40,6 @@ if (!$rental) {
                         <span class="small fw-bold"><?php echo date('M d, H:i', strtotime($rental['start_date'])); ?> - <?php echo date('M d, H:i', strtotime($rental['end_date'])); ?></span>
                     </div>
                 </div>
-
                 <div class="d-grid gap-2">
                     <a href="catalogue.php" class="btn btn-primary rounded-pill">Browse More Tools</a>
                     <a href="index.php" class="btn btn-light rounded-pill">Back to Home</a>
@@ -56,5 +48,4 @@ if (!$rental) {
         </div>
     </div>
 </div>
-
 <?php require_once 'includes/footer.php'; ?>
